@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shiftry | Professional Unit & Number Utility</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root[data-theme="light"] {
+            --primary: #4f46e5;
+            --primary-soft: #f5f3ff;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --danger: #ef4444;
+        }
+
+        :root[data-theme="dark"] {
+            --primary: #818cf8;
+            --primary-soft: rgba(129, 140, 248, 0.1);
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f1f5f9;
+            --text-light: #94a3b8;
+            --border: #334155;
+            --nav-bg: rgba(15, 23, 42, 0.9);
+            --danger: #f87171;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-top: 90px;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 75px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-toggle {
+            background: var(--primary-soft);
+            border: 1px solid var(--border);
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            cursor: pointer;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 1.5rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 950px) {
+            .container {
+                grid-template-columns: 1.3fr 0.7fr;
+            }
+        }
+
+        .card {
+            background: var(--card);
+            padding: 2.5rem;
+            border-radius: 28px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            background: var(--primary-soft);
+            padding: 8px;
+            border-radius: 18px;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 14px;
+            font-weight: 700;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .tab.active {
+            background: var(--card);
+            color: var(--primary);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 0.05em;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            background: var(--card);
+            color: var(--text);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-soft);
+        }
+
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.8rem;
+            margin-top: -0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            display: none;
+        }
+
+        .result-container {
+            padding: 2rem;
+            background: var(--bg);
+            border-radius: 20px;
+            text-align: center;
+            border: 2px dashed var(--border);
+            position: relative;
+        }
+
+        .res-val {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            word-break: break-all;
+        }
+
+        .sidebar-card {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 28px;
+            border: 1px solid var(--border);
+            position: sticky;
+            top: 100px;
+        }
+
+        .formula-box {
+            background: var(--primary-soft);
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+        }
+
+        .theory-step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            color: var(--text-light);
+            align-items: flex-start;
+            font-size: 0.9rem;
+        }
+
+        .step-num {
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-weight: 800;
+            min-width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        .pane {
+            display: none;
+        }
+
+        .pane.active {
+            display: block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo"><i data-lucide="layers"></i> Shiftry</div>
+        <button class="theme-toggle" onclick="toggleTheme()"><i data-lucide="sun" id="themeIcon"></i></button>
+    </nav>
+
+    <div class="container">
+        <main>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab(event,'num-pane')">Numbers</div>
+                <div class="tab" onclick="switchTab(event,'unit-pane')">Units</div>
+                <div class="tab" onclick="switchTab(event,'temp-pane')">Temperature</div>
+            </div>
+
+            <section id="num-pane" class="pane active card">
+                <label>Input Value</label>
+                <input id="numInput" placeholder="Enter value..." autocomplete="off" oninput="updateAll()">
+                <div id="validationError" class="error-msg">⚠️ Invalid characters for the selected base!</div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div><label>From</label>
+                        <select id="fromBase" onchange="updateAll()">
+                            <option value="10">Decimal</option>
+                            <option value="2">Binary</option>
+                            <option value="8">Octal</option>
+                            <option value="16">Hex</option>
+                        </select>
+                    </div>
+                    <div><label>To</label>
+                        <select id="toBase" onchange="updateAll()">
+                            <option value="2">Binary</option>
+                            <option value="10" selected>Decimal</option>
+                            <option value="8">Octal</option>
+                            <option value="16">Hex</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="result-container">
+                    <div id="numRes" class="res-val">---</div>
+                </div>
+            </section>
+
+            <section id="unit-pane" class="pane card">
+                <label>Value</label>
+                <input type="number" id="unitInput" placeholder="0.00" oninput="convertUnit()">
+                <label>Mode</label>
+                <select id="unitType" onchange="convertUnit()">
+                    <option value="kmToM">Kilometers → Meters</option>
+                    <option value="mToKm">Meters → Kilometers</option>
+                    <option value="kgToG">Kilograms → Grams</option>
+                    <option value="gToKg">Grams → Kilograms</option>
+                </select>
+                <div class="result-container">
+                    <div id="unitRes" class="res-val">---</div>
+                </div>
+            </section>
+
+            <section id="temp-pane" class="pane card">
+                <label>Temperature</label>
+                <input type="number" id="tempInput" placeholder="0.00" oninput="convertTemp()">
+                <label>Scale</label>
+                <select id="tempType" onchange="convertTemp()">
+                    <option value="cToF">Celsius → Fahrenheit</option>
+                    <option value="fToC">Fahrenheit → Celsius</option>
+                </select>
+                <div class="result-container">
+                    <div id="tempRes" class="res-val">---</div>
+                </div>
+            </section>
+        </main>
+
+        <aside class="sidebar-card">
+            <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; font-weight: 800;">
+                <i data-lucide="book-open"></i> Theory & Logic
+            </h3>
+            <div id="theoryContent"></div>
+        </aside>
+    </div>
+
+    <footer>&copy; 2026 Shiftry Utility Suite. Built for precision.</footer>
+
+    <script>
+        lucide.createIcons();
+
+        function toggleTheme() {
+            const root = document.documentElement;
+            const target = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+            root.setAttribute('data-theme', target);
+            document.getElementById('themeIcon').setAttribute('data-lucide', target === 'light' ? 'sun' : 'moon');
+            lucide.createIcons();
+        }
+
+        const mathTheory = {
+            "any-10": { formula: "\\[ \\sum_{i=0}^{n} (d_i \\times b^i) \\]", logic: "Positional Expansion", steps: ["Start from the rightmost digit.", "Multiply each digit by the base raised to its position power.", "Add all results together."] },
+            "10-any": { formula: "\\[ N \\div b = Q \\text{ rem } r \\]", logic: "Successive Division", steps: ["Divide the decimal number by the target base.", "Write down the remainder (digit).", "Repeat with the quotient until it hits 0.", "Read remainders in reverse order."] }
+        };
+
+        function switchTab(e, id) {
+            document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            e.currentTarget.classList.add('active');
+            if (id === 'num-pane') updateAll();
+            else if (id === 'unit-pane') convertUnit();
+            else if (id === 'temp-pane') convertTemp();
+        }
+
+        function updateTheory(mode) {
+            const content = document.getElementById('theoryContent');
+            let data;
+
+            if (mode === 'num') {
+                const bFrom = document.getElementById('fromBase').value;
+                const bTo = document.getElementById('toBase').value;
+                data = (bTo == 10) ? mathTheory["any-10"] : mathTheory["10-any"];
+            } else {
+                data = { formula: "\\[ \\text{Universal Factor Logic} \\]", logic: "Scalar Shift", steps: ["Identify the conversion factor.", "Apply multiplication or division."] };
+            }
+
+            content.innerHTML = `
+                <div class="formula-box">${data.formula}</div>
+                <p style="font-size:0.75rem; font-weight:800; color:var(--primary); text-transform:uppercase; margin-bottom:10px;">Method: ${data.logic}</p>
+                ${data.steps.map((s, i) => `
+                    <div class="theory-step">
+                        <div class="step-num">${i + 1}</div>
+                        <div>${s}</div>
+                    </div>`).join('')}`;
+
+            if (window.MathJax) MathJax.typesetPromise();
+        }
+
+        // Logic fix: Strict Validation & BigInt Conversion
+        function validateAndConvert() {
+            const val = document.getElementById("numInput").value.trim();
+            const from = parseInt(document.getElementById("fromBase").value);
+            const to = parseInt(document.getElementById("toBase").value);
+            const res = document.getElementById("numRes");
+            const err = document.getElementById("validationError");
+
+            if (!val) { res.innerText = "---"; err.style.display = "none"; return; }
+
+            // Base-specific Regex Validation
+            const baseRegex = {
+                2: /^[01]+$/,
+                8: /^[0-7]+$/,
+                10: /^[0-9]+$/,
+                16: /^[0-9A-Fa-f]+$/
+            };
+
+            if (!baseRegex[from].test(val)) {
+                res.innerText = "Error";
+                err.style.display = "block";
+                return;
+            }
+
+            err.style.display = "none";
+
+            try {
+                // Use BigInt to handle extremely large numbers safely
+                const b = BigInt(from);
+                let bigIntVal = 0n;
+                for (let char of val) {
+                    bigIntVal = bigIntVal * b + BigInt(parseInt(char, from));
+                }
+                res.innerText = bigIntVal.toString(to).toUpperCase();
+            } catch { res.innerText = "Error"; }
+        }
+
+        function convertUnit() {
+            const v = parseFloat(document.getElementById("unitInput").value);
+            const type = document.getElementById("unitType").value;
+            const res = document.getElementById("unitRes");
+            updateTheory('unit');
+            if (isNaN(v)) { res.innerText = "---"; return; }
+            res.innerText = (type.includes('ToM') || type.includes('ToG') ? v * 1000 : v / 1000).toLocaleString();
+        }
+
+        function convertTemp() {
+            const v = parseFloat(document.getElementById("tempInput").value);
+            const type = document.getElementById("tempType").value;
+            const res = document.getElementById("tempRes");
+            updateTheory('temp');
+            if (isNaN(v)) { res.innerText = "---"; return; }
+            res.innerText = (type === 'cToF' ? (v * 9 / 5) + 32 : (v - 32) * 5 / 9).toFixed(2) + "°";
+        }
+
+        function updateAll() { validateAndConvert(); updateTheory('num'); }
+        window.onload = updateAll;
+    </script>
+</body>
+
+</html>
